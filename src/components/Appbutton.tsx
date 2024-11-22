@@ -3,9 +3,11 @@ import {FC} from "react";
 interface Props{
     title?: string;
     type?: "danger" | "normal" | "regular";
+    //onClick: () => void
+    onClick?():void
 }
 
-const AppButton: FC<Props>  = ({title, type}) =>{
+const AppButton: FC<Props>  = ({title, type, onClick}) =>{
     let color = "";
 
     switch(type){
@@ -17,7 +19,7 @@ const AppButton: FC<Props>  = ({title, type}) =>{
         break;
     }
 
-    return <button className= {color +  " text-white p-2 rounded"}>{title}</button>;
+    return <button onClick={onClick} className= {color +  " text-white p-2 rounded"}>{title}</button>;
 };
 
 export default AppButton;

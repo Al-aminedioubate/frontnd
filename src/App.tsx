@@ -1,12 +1,12 @@
-import { useState, ChangeEventHandler } from "react";
+import { useState, ChangeEventHandler, useEffect } from "react";
 import NoteItem from "./components/NoteItem";
 import axios from 'axios';
-
 
 const App = () =>{
 
   //const [title, setTitle] = useState("");
   //const [description, setDescription] = useState("");
+  const [count, setCount] = useState(0);
 
   const [notes, setNotes]= useState<{
     id: string;
@@ -15,18 +15,30 @@ const App = () =>{
   }[]>([]);
 
   const [values, setValues] = useState({
-    title:"",
-    description:"",
-  })
+    title: "",
+    description: "",
+  });
 
   const handleChange: ChangeEventHandler<HTMLInputElement | HTMLTextAreaElement> = ({target}) => {
     const {name, value} = target;
     setValues({...values, [name]: value});    ///we need to spread old values first before updated new one.
   };
 
+  useEffect(() =>{
+    /*Methode pour recuperer toutes les notes dans notre backend et leur afficher sur le frontend*/
+    //we can call here our API and fetch notes
+    const fetchNotes = async () => {
+      const {data} = await axios("http://localhost:8000/note");
+      setNotes(data.notes);
+    }
+
+    fetchNotes();
+  }, []);
+
   return (
     <div className="max-w-3xl mx-auto space-y-6">
       
+      {/*Methode pour creer une note dans notre backend a partir de frontend*/}
       <form onSubmit={async (evt) =>{ 
         evt.preventDefault();
 
@@ -38,8 +50,11 @@ const App = () =>{
         setNotes([data.note,...notes]);
         setValues({title: "", description: ""});
       }} 
-      
-        className="space-y-6 bg-white shadow-md rounded p-5">
+      className="space-y-6 bg-white shadow-md rounded p-5">
+        <div>
+          <span>{count}</span>
+          <button type="button" onClick={() => setCount(count + 1)}> Click Me</button>
+        </div>
         <h1 className="font-semibold text-2xl text-center">Note Application</h1>
         <div>
 
@@ -67,7 +82,9 @@ const App = () =>{
       
       {/*Note items*/}
       {notes.map((note) =>{
-        return <NoteItem key={note.title} title={note.title} />
+        return <NoteItem onEditClick={() => {
+          setValues({title: note.title, description: note.description || ''});
+        }} key={note.id} title={note.title} />
       })}
     </div>
   );
