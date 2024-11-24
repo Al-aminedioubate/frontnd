@@ -6,7 +6,7 @@ const App = () =>{
 
   //const [title, setTitle] = useState("");
   //const [description, setDescription] = useState("");
-  const [count, setCount] = useState(0);
+  //const [count, setCount] = useState(0);
 
   const [notes, setNotes]= useState<{
     id: string;
@@ -18,6 +18,7 @@ const App = () =>{
     title: "",
     description: "",
   });
+  const [selectedNoteId, setSelectedNoteId] = useState("");
 
   const handleChange: ChangeEventHandler<HTMLInputElement | HTMLTextAreaElement> = ({target}) => {
     const {name, value} = target;
@@ -42,6 +43,28 @@ const App = () =>{
       <form onSubmit={async (evt) =>{ 
         evt.preventDefault();
 
+        //verifions d'abord qu'il ya une note selectionner avant de modifier
+        if(selectedNoteId){
+            const { data } = await axios.patch("http://localhost:8000/note/" + selectedNoteId,
+            {
+              title: values.title,
+              description: values.description,
+            }
+          );
+
+          const updatedNotes = notes.map((note) => {
+            if(note.id === selectedNoteId){
+              note.title = data.note.title;
+              note.description = data.note.description;
+            }
+            return note;
+          })
+
+          setNotes([...updatedNotes]);
+          setValues({title: '', description: ''});    //permet de vider le contenu du formulaire. 
+          return;                                       //on fait un return ici pour terminer l'action.
+        }
+
         const { data } = await axios.post("http://localhost:8000/note/create", {
           title: values.title,
           description: values.description,
@@ -51,10 +74,11 @@ const App = () =>{
         setValues({title: "", description: ""});
       }} 
       className="space-y-6 bg-white shadow-md rounded p-5">
+        {/**
         <div>
           <span>{count}</span>
           <button type="button" onClick={() => setCount(count + 1)}> Click Me</button>
-        </div>
+        </div> */}
         <h1 className="font-semibold text-2xl text-center">Note Application</h1>
         <div>
 
@@ -83,6 +107,7 @@ const App = () =>{
       {/*Note items*/}
       {notes.map((note) =>{
         return <NoteItem onEditClick={() => {
+          setSelectedNoteId(note.id);
           setValues({title: note.title, description: note.description || ''});
         }} key={note.id} title={note.title} />
       })}

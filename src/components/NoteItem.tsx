@@ -15,7 +15,7 @@ const NoteItem: FC<Props> = ({title, onEditClick}) => {
 
     <AppButton onClick={() => {console.log("viewing notes");}} title="View" type="regular"></AppButton>
     <AppButton onClick = {onEditClick} title="Edit" type="normal"></AppButton>
-    <AppButton title="Delete" type="danger"></AppButton>
+    <AppButton onClick={() => {console.log("deleted my notes");}} title="Delete" type="danger"></AppButton>
     </div>
     </div>
   )
