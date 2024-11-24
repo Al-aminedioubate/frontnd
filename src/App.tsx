@@ -52,6 +52,7 @@ const App = () =>{
             }
           );
 
+          //update items
           const updatedNotes = notes.map((note) => {
             if(note.id === selectedNoteId){
               note.title = data.note.title;
@@ -81,13 +82,12 @@ const App = () =>{
         </div> */}
         <h1 className="font-semibold text-2xl text-center">Note Application</h1>
         <div>
-
           <input type="text" 
-          className="w-full border-b-2 border-gray-700 outline-none " 
-          placeholder="Title"
-          onChange={handleChange}
-          value={values.title}
-          name="title"
+            className="w-full border-b-2 border-gray-700 outline-none " 
+            placeholder="Title"
+            onChange={handleChange}
+            value={values.title}
+            name="title"
           ></input>
         </div>
         <div>
@@ -105,12 +105,39 @@ const App = () =>{
       </form>
       
       {/*Note items*/}
+      {/*[
+        <NoteItem key="one" title="Test one"/>,       //this one is doing same job as map, here we are putting list of items in the array to return them.
+        <NoteItem key="two" title="Test two"/>,
+        <NoteItem key="tree" title="Test tree"/>
+      ]*/}
+
       {notes.map((note) =>{
-        return <NoteItem onEditClick={() => {
-          setSelectedNoteId(note.id);
-          setValues({title: note.title, description: note.description || ''});
-        }} key={note.id} title={note.title} />
+        return (
+          <NoteItem 
+            onEditClick={() => {
+              setSelectedNoteId(note.id);
+              setValues({title: note.title, description: note.description || ''});
+            }}
+
+            onDeleteClick={async() =>{
+              const result = confirm("Are you sure you want to delete?");
+              if(result == true){
+                //delete methode
+                await axios.delete("http://localhost:8000/note/" + note.id);
+              }
+
+              //update items on the front end automatically after deleted an item without refreshing the page.
+              const updatedNotes = notes.filter(({id}) => {
+                if(id !== note.id) return note;           
+              });
+
+              setNotes([...updatedNotes]);
+            }}
+
+            key={note.id} title={note.title} />
+          )
       })}
+      
     </div>
   );
 }

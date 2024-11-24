@@ -3,9 +3,10 @@ import AppButton from './Appbutton';
 
 interface Props{
   title?: string;
-  onEditClick?(): void
+  onEditClick?(): void;
+  onDeleteClick?(): void;
 }
-const NoteItem: FC<Props> = ({title, onEditClick}) => {
+const NoteItem: FC<Props> = ({title, onEditClick, onDeleteClick }) => {
 
   return (
     <div className="max-w-3xl mx-auto bg-white shadow-md rounded p-5">
@@ -15,7 +16,7 @@ const NoteItem: FC<Props> = ({title, onEditClick}) => {
 
     <AppButton onClick={() => {console.log("viewing notes");}} title="View" type="regular"></AppButton>
     <AppButton onClick = {onEditClick} title="Edit" type="normal"></AppButton>
-    <AppButton onClick={() => {console.log("deleted my notes");}} title="Delete" type="danger"></AppButton>
+    <AppButton onClick={onDeleteClick} title="Delete" type="danger"></AppButton>
     </div>
     </div>
   )
